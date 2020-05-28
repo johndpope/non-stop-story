@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body>
+<h1>Debug Low Duration for <%= @message[:title] %></h1>
+<p>Duration: <%= @message[:duration] %> seconds</p>
+<p>Links:</p>
+<p><a href="https://www.youtube.com/channel/<%= @message.channel[:channel] %>">Home</a></p>
+<p><a href="https://www.youtube.com/channel/<%= @message.channel[:channel] %>/videos?view=2&flow=list">Video - Live streams</a></p>
+<p>Have a great day!</p>
+</body>
+</html>

@@ -49,7 +49,10 @@ class LivesDetectJob < ApplicationJob
         live = Live.find_by_room_id_and_duration(room, nil)
 
         if live.start_at <= Time.now
-          live.update! duration: (Time.now - live.start_at).to_i
+          duration = (Time.now - live.start_at).to_i
+          live.update! duration: duration
+
+          DebugMailer.with(message: live).email.deliver_now if duration < 300
         else
           live.destroy!
           room.destroy! if room.lives.empty?
