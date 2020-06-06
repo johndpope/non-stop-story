@@ -12,11 +12,33 @@ class Network
 
         raise "Network error: #{res.code}" unless res.is_a? Net::HTTPSuccess
 
+        filename = "#{Time.now.strftime('%Y%m%d%H%M%S')}_#{channels.join('_')}.json"
+        File.open(File.join(Rails.root, 'log', filename), 'ab') do |io|
+          io.write(res.body)
+        end
+
         JSON.parse(res.body)
       rescue StandardError => e
         Rails.logger.error e.message
         retry if (retry_count += 1) <= 1
         {}
+      end
+    end
+
+    def get_response(worker, channels)
+      retry_count = 0
+      begin
+        res = request(encode_worker_uri(worker, channels))
+
+        raise "Network error: #{res.code}" unless res.is_a? Net::HTTPSuccess
+
+        filename = "#{Time.now.strftime('%Y%m%d%H%M%S')}_#{channels.join('_')}.json"
+        File.open(File.join(Rails.root, 'log', filename), 'ab') do |io|
+          io.write(res.body)
+        end
+      rescue StandardError => e
+        Rails.logger.error e.message
+        retry if (retry_count += 1) <= 1
       end
     end
 

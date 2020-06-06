@@ -7,11 +7,11 @@ class LivesDetectJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    %w[youtube bilibili].each do |platform_val|
+    LivesDetectJob.set(wait: 60.seconds).perform_later
+
+    %w[youtube].each do |platform_val|
       request_and_sync Platform.find_by_platform(platform_val)
     end
-
-    LivesDetectJob.set(wait: 60.seconds).perform_later
   end
 
   def request_and_sync(platform)
@@ -52,7 +52,7 @@ class LivesDetectJob < ApplicationJob
           duration = (Time.now - live.start_at).to_i
           live.update! duration: duration
 
-          DebugMailer.with(message: live).email.deliver_now if duration < 300
+          DebugMailer.with(message: live).email.deliver_now if duration < 600
         else
           live.destroy!
           room.destroy! if room.lives.empty?
